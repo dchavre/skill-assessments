@@ -59,15 +59,15 @@ def restart():
     win = False
     return gamestate, turn, win
 def choose_position(): # This function asks for a players choice
-    pos = input('Player: ')
-    if int(pos) < 0 or int(pos) > 8: # Checks to make sure that the choice they make is 0 - 8.
-        print('Invalid move, need tp pick a number from 0 - 8 (including 0 and 8).')
+    pos = input('Player ' + str(turn) + ': ')
+    if not pos.isnumeric():
+        print('Invalid move, need to pick a number from 0 - 8 (including 0 and 8).')
         return choose_position()
-    elif str(gamestate[int(pos)]) != '-':
-        print('Invalid move, please try again.')
+    elif not 0 <= int(pos) <= 8:
+        print('Invalid move, need to pick a number from 0 - 8 (including 0 and 8).')
         return choose_position()
     else:
-        return pos
+        return int(pos)
 def Tic_Tac_Toe():
     while True:
         # Making some global variable to make my life easier
