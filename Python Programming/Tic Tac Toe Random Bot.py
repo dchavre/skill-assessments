@@ -8,17 +8,39 @@ random_number = 0
 
 gamestate = ['-', '-', '-', '-', '-', '-', '-', '-', '-']
 
-def rng(random_number, gamestate, autovalid):
+def rng(random_number, gamestate, autovalid, choice_list):
     autovalid = False
     while autovalid == False:
         random_number = random.randint(0, 8)
         if gamestate[random_number] == '-':
-            gamestate[random_number] = 'O'
+            gamestate[random_number] = choice_list[1]
             autovalid = True
         else:
             autovalid = False
     return gamestate
 
+def move_validity(pos, gamestate): # Tests move valitdity
+    if str(gamestate[pos]) != '-':
+        print('Invalid move, please try again')
+        valid = False
+        return valid
+    else:
+        valid = True
+        return valid
+
+def choice_symbol(choice):
+    choice = input('X or O: ')
+    if not choice.isalpha():
+        print('Please try again, invalid symbol entered. Pick between X and O.')
+        return choice_symbol(choice)
+    elif choice.upper() == 'X':
+        choice_rng = 'O'
+    elif choice.upper() == 'O':
+        choice_rng = 'X'
+    else:
+        print('Something really went wrong, try to pick between X and O.')
+        return choice_symbol(choice)
+    return [choice.upper(), choice_rng]
 
 def display_board(gamestate):
     # Printing gamestate in such a way that it looks like a Tic Tac Toe Board
@@ -26,12 +48,12 @@ def display_board(gamestate):
     print(gamestate[3:6])
     print(gamestate[6:9])
 
-def update(pos, turn, gamestate): # Updates the gamestate
+def update(pos, turn, gamestate, choice_list): # Updates the gamestate
         if int(turn) == int(1):
-            gamestate[int(pos)] = 'X'
+            gamestate[int(pos)] = choice_list[0]
             return gamestate
         elif int(turn) == int(2):
-            gamestate[int(pos)] = 'O'
+            gamestate[int(pos)] = choice_list[1]
             return gamestate
         else:
             ('ERROR') # Error case
@@ -68,18 +90,31 @@ def choose_position(): # This function asks for a players choice
         return choose_position()
     else:
         return int(pos)
+    
+    
 def Tic_Tac_Toe():
+    global gamestate
+    global pos
+    global turn
+    global choice_list
+    
+    choice = None
+    choice_list = choice_symbol(choice)
+    
     while True:
-        # Making some global variable to make my life easier
-        global gamestate
-        global pos
-        global turn
-
         # Player 1:
         if turn == 1:
             display_board(gamestate) # Prints out the tic tac toe board
             pos = choose_position() # Takes the player's input
-            gamestate = update(pos, turn, gamestate)
+            
+            # Checks move validity
+            valid = move_validity(pos, gamestate)
+            if valid == True:
+                gamestate = update(pos, turn, gamestate, choice_list)
+            if valid == False:
+                while valid == False:
+                    pos = choose_position()
+                    valid = move_validity(pos, gamestate)
 
             # Checks for a win
             win = check_win(gamestate)
@@ -99,7 +134,7 @@ def Tic_Tac_Toe():
         if turn == 2:
 
             # Making a valid move:
-            gamestate = rng(random_number, gamestate, autovalid)
+            gamestate = rng(random_number, gamestate, autovalid, choice_list)
 
             # Checks for a win
             win = check_win(gamestate)
